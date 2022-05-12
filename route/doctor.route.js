@@ -24,4 +24,5 @@ doctorRouter.post('/viewByCat', doctorController.viewByCat);
 doctorRouter.delete('/deleteDoctor', doctorController.deleteDoctor);
 doctorRouter.post('/updateDoctor', upload.single('image'), doctorController.updateDoctor);
 
+
 module.exports = doctorRouter;

@@ -28,14 +28,14 @@ const uploadFile = async(filename) => {
 
 exports.SignUp = (request, response) => {
 
-    let a = request.body.name;
-    let b = request.body.email;
-    let c = request.body.password;
-    let d = 'https://firebasestorage.googleapis.com/v0/b/ayurveda-d6cac.appspot.com/o/' + request.file.filename + '?alt=media&token=saved-image';
-    let e = request.body.mobile;
+    let name = request.body.name;
+    let email = request.body.email;
+    let password = request.body.password;
+    let image = 'https://firebasestorage.googleapis.com/v0/b/ayurveda-d6cac.appspot.com/o/' + request.file.filename + '?alt=media&token=saved-image';
+    let mobile = request.body.mobile;
 
 
-    adminM.create({ name: a, email: b, password: c, image: d, mobile: e }).then(result => {
+    adminM.create({ name: name, email: email, password: password, image: image, mobile: mobile }).then(result => {
         uploadFile(
             path.join(__dirname, "../", "public/images/") + request.file.filename
         );
@@ -49,10 +49,11 @@ exports.SignUp = (request, response) => {
 
 exports.SignIn = (request, response) => {
 
-    let b = request.body.email;
-    let c = request.body.password;
+    let email = request.body.email;
+    let password = request.body.password;
 
-    adminM.findOne({ email: b, password: c }).then(result => {
+    adminM.findOne({ email: email, password: password }).then(result => {
+        console.log(result);
         const payload = { subject: result._id };
         const token = jwt.sign(payload, 'ndajkfdskjvdsjfcadsfff');
         return response.status(500).json({
@@ -68,13 +69,13 @@ exports.SignIn = (request, response) => {
 exports.Update = (request, response) => {
     if (request.file) {
         console.log('inside if')
-        let a = request.body.name;
-        let b = request.body.email;
-        let c = request.body.password;
-        let d = 'https://firebasestorage.googleapis.com/v0/b/ayurveda-d6cac.appspot.com/o/' + request.file.filename + '?alt=media&token=saved-image';
-        let e = request.body.mobile;
+        let name = request.body.name;
+        let email = request.body.email;
+        let password = request.body.password;
+        let image = 'https://firebasestorage.googleapis.com/v0/b/ayurveda-d6cac.appspot.com/o/' + request.file.filename + '?alt=media&token=saved-image';
+        let mobile = request.body.mobile;
 
-        adminM.updateOne({ _id: request.body.id }, { $set: { name: a, email: b, password: c, image: d, mobile: e } }).then(result => {
+        adminM.updateOne({ _id: request.body.id }, { $set: { name: name, email: email, password: password, image: image, mobile: mobile } }).then(result => {
             uploadFile(
                 path.join(__dirname, "../", "public/images/") + request.file.filename
             );
@@ -85,12 +86,12 @@ exports.Update = (request, response) => {
             return response.status(500).json({ error: err, message: 'Cannot Update' });
         });
     } else {
-        let a = request.body.name;
-        let b = request.body.email;
-        let c = request.body.password;
-        let e = request.body.mobile;
+        let name = request.body.name;
+        let email = request.body.email;
+        let password = request.body.password;
+        let mobile = request.body.mobile;
 
-        adminM.updateOne({ _id: request.body.id }, { $set: { name: a, email: b, password: c, mobile: e } }).then(result => {
+        adminM.updateOne({ _id: request.body.id }, { $set: { name: name, email: email, password: password, mobile: mobile } }).then(result => {
             return response.status(200).json(result);
 
         }).catch(err => {

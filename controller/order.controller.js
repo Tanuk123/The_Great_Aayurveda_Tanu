@@ -20,7 +20,7 @@ exports.PlaceOrder = (request, response) => {
         return response.status(200).json({ result: result, });
     }).catch(err => {
         console.log(err);
-        return response.status(500).json({ error: error });
+        return response.status(500).json({ message: "error" });
     });
 }
 
@@ -56,27 +56,26 @@ exports.DeliveredOrders = (request, response) => {
 
 exports.TrackOrder = (request, response) => {
     orderM.findOne({ orderStatus: 'ordered', userId: request.body.userId }).populate('userId').populate({ path: 'medicineList.medicines' }).
-        then(result => {
-            return response.status(200).json(result);
-        }).catch(err => {
-            console.log(err);
-            return response.status(500).json({ error: 'Cannot getting details' });
-        });
+    then(result => {
+        return response.status(200).json(result);
+    }).catch(err => {
+        console.log(err);
+        return response.status(500).json({ error: 'Cannot getting details' });
+    });
 }
 
 exports.CancelOrder = (request, response) => {
     orderM.findOne({ orderStatus: 'ordered', userId: request.body.userId }).then(result => {
         if (result.delivery == 'pending') {
             console.log('inside if');
-            orderM.deleteOne({userId:request.body.userId}).then(result=>{
+            orderM.deleteOne({ userId: request.body.userId }).then(result => {
                 return response.status(200).json({ message: 'Order Deleted' });
-            }).catch(err=>{
+            }).catch(err => {
                 console.log(err);
-                return response.status(404).json({error:'cannot canceled'});
+                return response.status(404).json({ error: 'cannot canceled' });
             });
-            
-        }
-        else {
+
+        } else {
             return response.status(403).json({ error: 'Cannot cancel order' });
         }
 
