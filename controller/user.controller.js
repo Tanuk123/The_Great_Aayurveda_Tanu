@@ -11,7 +11,7 @@ const storage = new Storage({
     keyFilename: "serviceFirebaseStorage.json"
 });
 
-const uploadFile = async (filename) => {
+const uploadFile = async(filename) => {
 
     await storage.bucket(bucketName).upload(filename, {
         gzip: true,
@@ -26,18 +26,18 @@ const uploadFile = async (filename) => {
 }
 exports.SignUp = (request, response) => {
 
-    let a = request.body.name;
-    let b = request.body.email;
-    let c = request.body.password;
-    let d = request.body.mobile;
-    let e = 'https://firebasestorage.googleapis.com/v0/b/ayurveda-d6cac.appspot.com/o/' + request.file.filename + '?alt=media&token=user-image';
+    let name = request.body.name;
+    let email = request.body.email;
+    let password = request.body.password;
+    let mobile = request.body.mobile;
+    let image = 'https://firebasestorage.googleapis.com/v0/b/ayurveda-d6cac.appspot.com/o/' + request.file.filename + '?alt=media&token=user-image';
 
     let randomNumber = Math.floor(100000 + Math.random() * 900000);
 
 
-    bcrypt.hash(c, 10)
+    bcrypt.hash(password, 10)
         .then(encpass => {
-            userM.create({ name: a, email: b, password: encpass, mobile: d, image: e, otp: randomNumber }).then(result => {
+            userM.create({ name: name, email: email, password: encpass, mobile: mobile, image: image, otp: randomNumber }).then(result => {
                 uploadFile(
                     path.join(__dirname, "../", "public/images/") + request.file.filename
                 );
@@ -49,7 +49,7 @@ exports.SignUp = (request, response) => {
             var options = {
                 authorization: "FtQi9Z8SXlC5rq1VdNjsKREuO7wWTmnc6zvbI0eJHYLfohMAUxL5mucn6aw1PpNosir4G8gyJzRFEeYj",
                 message: 'Your One Time OTP for signup in The Great Ayurveda is ' + randomNumber,
-                numbers: [d]
+                numbers: [mobile]
             }
             fastTwoSms.sendMessage(options).then(result => {
                 console.log(result);
@@ -72,8 +72,7 @@ exports.Verify = (request, response) => {
         if (result.matchedCount && result.modifiedCount) {
             return response.status(201).json({ result: result, message: 'SignUp Success' });
 
-        }
-        else {
+        } else {
             return response.status(403).json({ result: result, Error: 'Please Enter valid otp' });
 
         }
@@ -89,8 +88,7 @@ exports.IsVerified = (request, response) => {
         console.log(result);
         if (result.isVerified) {
             return response.status(201).json(result);
-        }
-        else {
+        } else {
             return response.status(500).json({ error: 'Not a Verified' });
         }
 
@@ -103,25 +101,22 @@ exports.IsVerified = (request, response) => {
 }
 
 exports.SignIn = (request, response) => {
-    var a = request.body.email;
-    var b = request.body.password;
+    var email = request.body.email;
+    var password = request.body.password;
 
-    userM.findOne({ email: a }).then(result => {
+    userM.findOne({ email: email }).then(result => {
         console.log(result);
         const encpass = result.password;
-        console.log(b);
-        bcrypt.compare(b, encpass, function (err, res) {
+        console.log(password);
+        bcrypt.compare(password, encpass, function(err, res) {
             if (result.isVerified && res) {
                 const payload = { subject: result._id };
                 const token = jwt.sign(payload, 'dhdbsjcdsncjdsfjdsjkfskjdsfr');
-                return response.status(201).json(
-                    {
-                        result: result,
-                        token: token
-                    }
-                );
-            }
-            else {
+                return response.status(201).json({
+                    result: result,
+                    token: token
+                });
+            } else {
                 return response.status(500).json({ error: 'Invalid User' });
             }
         });
